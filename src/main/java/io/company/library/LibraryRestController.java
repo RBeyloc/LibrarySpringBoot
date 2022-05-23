@@ -28,7 +28,7 @@ public class LibraryRestController {
     }
 
     //CRUD: read, find one book by id
-    @PostMapping(path="getBook")
+    @GetMapping(path="getBook")
     public Optional<Book> findBookById(@RequestParam Long bookId){
         Optional<Book> bookFound = bookservice.findBookById(bookId);
         if (bookFound.isPresent()) {
