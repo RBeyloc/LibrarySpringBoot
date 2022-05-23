@@ -1,10 +1,8 @@
 package io.company.library;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -52,6 +50,14 @@ public class LibraryRestController {
     }
 
     //CRUD: update
-
+    @PutMapping(path="updateBook", consumes = "application/JSON")
+    public Optional<Book> updateBook(@RequestBody Book book){
+        Optional<Book> bookFound = bookservice.findBookById(book.getBookId());
+        if (bookFound.isPresent()) {
+            return Optional.ofNullable(bookservice.updateBook(book));
+        } else  {
+            return null;
+        }
+    }
 
 }

@@ -38,6 +38,11 @@ public class BookService {
         }
     }
 
+    public Book updateBook(Book book) {
+        Book bookUpdated = bookRepository.save(book);
+        return bookUpdated;
+    }
+
     public Optional<Book> findBookByTitle(String title){
         bookRepository.findBookByTitle(title);
         return null;
@@ -50,7 +55,6 @@ public class BookService {
         //
         return null;
     }
-
 
 
 
