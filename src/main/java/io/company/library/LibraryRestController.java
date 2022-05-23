@@ -21,10 +21,18 @@ public class LibraryRestController {
         return bookservice.getAllBooks();
     }
 
+
+    //CRUD: create
+    @PostMapping(path="addBook", consumes = "application/JSON")
+    public Book addBook(@RequestBody Book book){
+        Book bookCreated = bookservice.createBook(book);
+        return bookCreated ;
+    }
+
     //CRUD: read, find one book by id
-    @GetMapping("getBook")
-    public Optional<Book> findBookById(Long id){
-        Optional<Book> bookFound = bookservice.findBookById(id);
+    @PostMapping(path="getBook")
+    public Optional<Book> findBookById(@RequestParam Long bookId){
+        Optional<Book> bookFound = bookservice.findBookById(bookId);
         if (bookFound.isPresent()) {
             return Optional.of(bookFound.get());
         } else  {
@@ -32,25 +40,16 @@ public class LibraryRestController {
         }
     }
 
-    //CRUD: create
-    @PostMapping("addBook")
-    public Book addBook(@RequestBody Book book){
-        Book bookCreated = bookservice.createBook(book);
-        return bookCreated ;
-    }
-
     //CRUD: delete
-    @DeleteMapping("deleteBook")
-    public Optional<Book> deleteBook (Long id){
-        Optional<Book> bookFound = bookservice.findBookById(id);
+    @DeleteMapping(path="deleteBook")
+    public Optional<Book> deleteBook (@RequestParam Long bookId){
+        Optional<Book> bookFound = bookservice.deleteBookById(bookId);
         if(bookFound.isPresent()) {
-            bookservice.deleteBookById(id);
             return Optional.of(bookFound.get());
         } else {
             return null;
         }
     }
-
 
     //CRUD: update
 
