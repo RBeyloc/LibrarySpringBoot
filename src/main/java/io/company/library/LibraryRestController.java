@@ -60,4 +60,26 @@ public class LibraryRestController {
         }
     }
 
+    //CRUD: read, find one book by title
+    @GetMapping(path="getBookByTitle")
+    public Optional<Book> findBookByTitle(@RequestParam String title){
+        Optional<Book> bookFound = bookservice.findBookByTitle(title);
+        if (bookFound.isPresent()) {
+            return Optional.of(bookFound.get());
+        } else  {
+            return null;
+        }
+    }
+
+    //CRUD: delete by title
+    @DeleteMapping(path="deleteBookByTitle")
+    public Optional<Book> deleteBookByTitle (@RequestParam String title){
+        Optional<Book> bookFound = bookservice.deleteBookByTitle(title);
+        if(bookFound.isPresent()) {
+            return Optional.of(bookFound.get());
+        } else {
+            return null;
+        }
+    }
+
 }

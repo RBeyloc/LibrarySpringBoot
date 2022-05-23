@@ -44,16 +44,18 @@ public class BookService {
     }
 
     public Optional<Book> findBookByTitle(String title){
-        bookRepository.findBookByTitle(title);
-        return null;
+        return bookRepository.findBookByTitle(title);
     }
 
-    public  Book deleteBookByTitle(String title){
+    public Optional<Book> deleteBookByTitle(String title){
         //Find out IF this id-book IS in our DB
-
-        Optional<Book> deletedBook = bookRepository.deleteBookByTitle(title);
-        //
-        return null;
+        Optional<Book> bookFound = bookRepository.findBookByTitle(title);
+        if(bookFound.isPresent()) {
+            bookRepository.deleteBookByTitle(title);
+            return Optional.of(bookFound.get());
+        } else {
+            return null;
+        }
     }
 
 
