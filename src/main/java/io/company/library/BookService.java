@@ -18,9 +18,9 @@ public class BookService {
         return books;
     }
 
-    public Book createBook (Book book){
+    public Optional<Book> createBook (Book book){
         Book bookCreated = bookRepository.save(book);
-        return bookCreated;
+        return Optional.of(bookCreated);
     }
 
     public Optional<Book> findBookById(Long id){
