@@ -1,13 +1,17 @@
 package io.company.library;
 
+import com.github.javafaker.Faker;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import java.util.Scanner;
 
-    @Component
+import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
+
+@Component
     public class ApplicationCommandRunner implements CommandLineRunner {
 
         protected final Log logger = LogFactory.getLog(getClass());
@@ -18,7 +22,10 @@ import java.util.Scanner;
         @Override
         public void run(String... args) throws Exception {
 
-            Scanner reader = new Scanner(System.in);
+
+
+
+            //Scanner reader = new Scanner(System.in);
             //createBooks();
             //createOneBook(reader);
 
@@ -26,19 +33,20 @@ import java.util.Scanner;
 
         public void createBooks(){
             logger.info("Welcome to the createBooks");
-            // String title, String author, int pages, int year, String iSBN
-            Book book1 = new Book("Anna Karenina", "Tolstoy", 562, 1896, "BR5GV-5-ERG5-6567");
-            Book book2 = new Book("To the lighthouse", "V Wolf", 235, 1626, "56756-DFG2T-554");
-            Book book3 = new Book("Orlando", "Virginia Wolf", 203, 2023, "4455645-GWR-456");
-            Book book4 = new Book("In Search of Lost Time", "Marcel Proust", 152, 2023, "4455645-GW1R-456");
-            //to repo-DB via bookService
-            bookService.createBook(book1);
-            bookService.createBook(book2);
-            bookService.createBook(book3);
-            bookService.createBook(book4);
+
+            Faker faker = new Faker();
+
+            for (int i = 0; i < 1000; i++) {
+                String title = faker.book().title();
+                String author = faker.book().author();
+                int pages = ThreadLocalRandom.current().nextInt(60, 2500);
+                int publishedYear = ThreadLocalRandom.current().nextInt(-500, 2022);
+                String isbn = RandomStringUtils.randomAlphabetic(20);
+                Book book = new Book(title, author, pages, publishedYear, isbn);
+                bookService.createBook(book);
+            }
 
             logger.info("finishing createBooks ...");
-
 
         }
 

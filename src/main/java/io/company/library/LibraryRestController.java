@@ -38,7 +38,7 @@ public class LibraryRestController {
         }
     }
 
-    //CRUD: delete
+    //CRUD: delete book by id
     @DeleteMapping(path="deleteBook")
     public Optional<Book> deleteBook (@RequestParam Long bookId){
         Optional<Book> bookFound = bookservice.deleteBookById(bookId);
