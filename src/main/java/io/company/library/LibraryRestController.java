@@ -1,6 +1,7 @@
 package io.company.library;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -19,7 +20,6 @@ public class LibraryRestController {
         return bookservice.getAllBooks();
     }
 
-
     //CRUD: create
     @PostMapping(path="addBook", consumes = "application/JSON")
     public Book addBook(@RequestBody Book book){
@@ -29,56 +29,59 @@ public class LibraryRestController {
 
     //CRUD: read, find one book by id
     @GetMapping(path="getBook")
-    public Optional<Book> findBookById(@RequestParam Long bookId){
+    public ResponseEntity<String> findBookById(@RequestParam Long bookId){
         Optional<Book> bookFound = bookservice.findBookById(bookId);
         if (bookFound.isPresent()) {
-            return Optional.of(bookFound.get());
+            return ResponseEntity.accepted().body(bookFound.get().toString());
         } else  {
-            return null;
+            return ResponseEntity.accepted().body("Fail: Book id not found");
         }
     }
 
     //CRUD: delete book by id
     @DeleteMapping(path="deleteBook")
-    public Optional<Book> deleteBook (@RequestParam Long bookId){
+    public ResponseEntity<String> deleteBook (@RequestParam Long bookId){
         Optional<Book> bookFound = bookservice.deleteBookById(bookId);
         if(bookFound.isPresent()) {
-            return Optional.of(bookFound.get());
+            return ResponseEntity.accepted().body(bookFound.get().toString());
         } else {
-            return null;
+            return ResponseEntity.accepted().body("Fail: Book id not found");
         }
     }
 
     //CRUD: update
     @PutMapping(path="updateBook", consumes = "application/JSON")
-    public Optional<Book> updateBook(@RequestBody Book book){
+    public ResponseEntity<String> updateBook(@RequestBody Book book){
         Optional<Book> bookFound = bookservice.findBookById(book.getBookId());
-        if (bookFound.isPresent()) {
-            return Optional.ofNullable(bookservice.updateBook(book));
-        } else  {
-            return null;
+        if (!bookFound.isPresent()) {
+            return ResponseEntity.accepted().body("Fail: Book to update not found");
+        } else if(book.equals(bookFound)) {
+            return ResponseEntity.accepted().body("Fail: No changes on book to be updates");
+        } else {
+            return ResponseEntity.accepted().body(bookservice.updateBook(book).toString());
         }
     }
 
     //CRUD: read, find one book by title
     @GetMapping(path="getBookByTitle")
-    public Optional<Book> findBookByTitle(@RequestParam String title){
+    public ResponseEntity<String> findBookByTitle(@RequestParam String title){
         Optional<Book> bookFound = bookservice.findBookByTitle(title);
         if (bookFound.isPresent()) {
-            return Optional.of(bookFound.get());
+            return ResponseEntity.accepted().body(bookFound.get().toString());
         } else  {
-            return null;
+            return ResponseEntity.accepted().body("Fail: Title not found");
         }
     }
 
     //CRUD: delete by title
     @DeleteMapping(path="deleteBookByTitle")
-    public Optional<Book> deleteBookByTitle (@RequestParam String title){
-        Optional<Book> bookFound = bookservice.deleteBookByTitle(title);
+    public ResponseEntity<String> deleteBookByTitle (@RequestParam String title){
+        Optional<Book> bookFound = bookservice.findBookByTitle(title);
         if(bookFound.isPresent()) {
-            return Optional.of(bookFound.get());
+            bookservice.deleteBookByTitle(title);
+            return ResponseEntity.accepted().body(bookFound.get().toString());
         } else {
-            return null;
+            return ResponseEntity.accepted().body("Fail: Title not found");
         }
     }
 

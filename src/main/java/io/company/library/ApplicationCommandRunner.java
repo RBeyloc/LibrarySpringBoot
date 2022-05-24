@@ -21,21 +21,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
         @Override
         public void run(String... args) throws Exception {
-
-
-
-
             //Scanner reader = new Scanner(System.in);
             //createBooks();
             //createOneBook(reader);
-
         }
 
         public void createBooks(){
             logger.info("Welcome to the createBooks");
 
             Faker faker = new Faker();
-
             for (int i = 0; i < 1000; i++) {
                 String title = faker.book().title();
                 String author = faker.book().author();

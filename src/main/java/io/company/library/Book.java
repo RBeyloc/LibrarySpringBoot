@@ -5,22 +5,22 @@ import lombok.*;
 import javax.persistence.*;
 
 
-@Getter @Setter @ToString @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @ToString @EqualsAndHashCode @NoArgsConstructor @AllArgsConstructor
 @Entity(name="Book")
 @Table(name="BOOK_TABLE")
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="BOOK_ID")
+    @Column(name = "BOOK_ID")
     private long bookId;
-    @Column(name="BOOK_TITLE")
+    @Column(name = "BOOK_TITLE")
     private String title;
     private String author;
     private int pages;
-    @Column(name="PUBLISHED_YEAR")
+    @Column(name = "PUBLISHED_YEAR")
     private int publishedYear;
-    @Column(name="ISBN")
+    @Column(name = "ISBN")
     private String isbn;
 
     public Book(String title, String author, int pages, int publishedYear, String isbn) {
