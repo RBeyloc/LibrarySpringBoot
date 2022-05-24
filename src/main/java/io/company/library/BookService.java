@@ -13,14 +13,12 @@ public class BookService {
     @Autowired
     BookRepository bookRepository;
 
-    public Iterable<Book> getAllBooks() {
-        Iterable<Book> books = bookRepository.findAll();
-        return books;
+    public Optional<Iterable<Book>> getAllBooks() {
+        return Optional.of(bookRepository.findAll());
     }
 
-    public Optional<Book> createBook (Book book){
-        Book bookCreated = bookRepository.save(book);
-        return Optional.of(bookCreated);
+    public Optional<Book> createBook(Book book){
+        return Optional.of(bookRepository.save(book));
     }
 
     public Optional<Book> findBookById(Long id){
@@ -38,24 +36,21 @@ public class BookService {
         }
     }
 
-    public Book updateBook(Book book) {
-        Book bookUpdated = bookRepository.save(book);
-        return bookUpdated;
-    }
-
-    public Optional<Book> findBookByTitle(String title){
-        return bookRepository.findBookByTitle(title);
-    }
-
-    public Optional<Book> deleteBookByTitle(String title){
-        //Find out IF this id-book IS in our DB
-        Optional<Book> bookFound = bookRepository.findBookByTitle(title);
+    public Optional<Book> updateBook(Book book) {
+        Optional<Book> bookFound = bookRepository.findById(book.getBookId());
         if(bookFound.isPresent()) {
-            bookRepository.deleteBookByTitle(title);
-            return Optional.of(bookFound.get());
+            return Optional.of(bookRepository.save(book));
         } else {
             return null;
         }
+    }
+
+    public Optional<Iterable<Book>> findBooksByTitle(String title){
+        return bookRepository.findBooksByTitle(title);
+    }
+
+    public Optional<Book> deleteBookByTitle(String title){
+        return bookRepository.deleteBookByTitle(title);
     }
 
 

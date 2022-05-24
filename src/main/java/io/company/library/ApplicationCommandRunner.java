@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
             logger.info("Welcome to the createBooks");
 
             Faker faker = new Faker();
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 500; i++) {
                 String title = faker.book().title();
                 String author = faker.book().author();
                 int pages = ThreadLocalRandom.current().nextInt(60, 2500);

@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface BookRepository extends CrudRepository <Book, Long> {
 
-    Optional<Book> findBookByTitle(String title);
+    Optional<Iterable<Book>> findBooksByTitle(String title);
 
     Optional<Book> deleteBookByTitle(String title);
 

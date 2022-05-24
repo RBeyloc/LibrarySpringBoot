@@ -18,11 +18,18 @@ public class LibraryRestController {
     //CRUD: read
     @GetMapping("books")
     public ResponseEntity<Iterable<Book>> getAllBooks() {
-        Iterable<Book> booksRetrieved = bookservice.getAllBooks();
+        Optional<Iterable<Book>> booksRetrieved = bookservice.getAllBooks();
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("operation", "books");
-        headers.add("operationStatus", "success");
-        return ResponseEntity.accepted().headers(headers).body(booksRetrieved);
+
+        if (booksRetrieved.isPresent()) {
+            headers.add("operationStatus", "success");
+            return ResponseEntity.accepted().headers(headers).body(booksRetrieved.get());
+        } else {
+            headers.add("operationStatus", "fail");
+            return ResponseEntity.accepted().headers(headers).body(null);
+        }
     }
 
     //CRUD: create
@@ -44,59 +51,90 @@ public class LibraryRestController {
 
     //CRUD: read, find one book by id
     @GetMapping(path = "getBook")
-    public ResponseEntity<String> findBookById(@RequestParam Long bookId) {
+    public ResponseEntity<Book> findBookById(@RequestParam Long bookId) {
         Optional<Book> bookFound = bookservice.findBookById(bookId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("operation", "getBook");
+
         if (bookFound.isPresent()) {
-            return ResponseEntity.accepted().body(bookFound.get().toString());
+            headers.add("operationStatus", "found");
+            return ResponseEntity.accepted().headers(headers).body(bookFound.get());
         } else {
-            return ResponseEntity.accepted().body("Fail: Book id not found");
+            headers.add("operationStatus", "fail");
+            return ResponseEntity.accepted().headers(headers).body(null);
         }
     }
 
     //CRUD: delete book by id
     @DeleteMapping(path = "deleteBook")
-    public ResponseEntity<String> deleteBook(@RequestParam Long bookId) {
+    public ResponseEntity<Book> deleteBook(@RequestParam Long bookId) {
         Optional<Book> bookFound = bookservice.deleteBookById(bookId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("operation", "deleteBook");
+
         if (bookFound.isPresent()) {
-            return ResponseEntity.accepted().body(bookFound.get().toString());
+            headers.add("operationStatus", "deleted");
+            return ResponseEntity.accepted().headers(headers).body(bookFound.get());
         } else {
-            return ResponseEntity.accepted().body("Fail: Book id not found");
+            headers.add("operationStatus", "fail");
+            return ResponseEntity.accepted().headers(headers).body(null);
         }
     }
 
     //CRUD: update
     @PutMapping(path = "updateBook", consumes = "application/JSON")
-    public ResponseEntity<String> updateBook(@RequestBody Book book) {
+    public ResponseEntity<Book> updateBook(@RequestBody Book book) {
         Optional<Book> bookFound = bookservice.findBookById(book.getBookId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("operation", "updateBook");
+
         if (!bookFound.isPresent()) {
-            return ResponseEntity.accepted().body("Fail: Book to update not found");
+            headers.add("operationStatus", "not found");
+            return ResponseEntity.accepted().headers(headers).body(null);
         } else if (book.equals(bookFound)) {
-            return ResponseEntity.accepted().body("Fail: No changes on book to be updates");
+            headers.add("operationStatus", "no data to update");
+            return ResponseEntity.accepted().headers(headers).body(null);
         } else {
-            return ResponseEntity.accepted().body(bookservice.updateBook(book).toString());
+            headers.add("operationStatus", "updated");
+            return ResponseEntity.accepted().headers(headers).body(bookservice.updateBook(book).get());
         }
     }
 
     //CRUD: read, find one book by title
     @GetMapping(path = "getBookByTitle")
-    public ResponseEntity<String> findBookByTitle(@RequestParam String title) {
-        Optional<Book> bookFound = bookservice.findBookByTitle(title);
-        if (bookFound.isPresent()) {
-            return ResponseEntity.accepted().body(bookFound.get().toString());
+    public ResponseEntity<Iterable<Book>> findBooksByTitle(@RequestParam String title) {
+        Optional<Iterable<Book>> booksFound = bookservice.findBooksByTitle(title);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("operation", "getBookByTitle");
+
+        if (booksFound.isPresent()) {
+            headers.add("operationStatus", "success");
+            return ResponseEntity.accepted().headers(headers).body(booksFound.get());
         } else {
-            return ResponseEntity.accepted().body("Fail: Title not found");
+            headers.add("operationStatus", "not Found");
+            return ResponseEntity.accepted().headers(headers).body(null);
         }
     }
 
     //CRUD: delete by title
     @DeleteMapping(path = "deleteBookByTitle")
-    public ResponseEntity<String> deleteBookByTitle(@RequestParam String title) {
-        Optional<Book> bookFound = bookservice.findBookByTitle(title);
-        if (bookFound.isPresent()) {
-            bookservice.deleteBookByTitle(title);
-            return ResponseEntity.accepted().body(bookFound.get().toString());
+    public ResponseEntity<Book> deleteBookByTitle(@RequestParam String title) {
+        Optional<Iterable<Book>> booksFound = bookservice.findBooksByTitle(title);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("operation", "deleteBookByTitle");
+
+        if (booksFound.isPresent()) {
+            headers.add("operationStatus", "deleted successfully");
+            Optional<Book> bookDeleted = bookservice.deleteBookByTitle(title);
+            return ResponseEntity.accepted().body(bookDeleted.get());
         } else {
-            return ResponseEntity.accepted().body("Fail: Title not found");
+            headers.add("operationStatus", "not Found");
+            return ResponseEntity.accepted().headers(headers).body(null);
         }
     }
 
