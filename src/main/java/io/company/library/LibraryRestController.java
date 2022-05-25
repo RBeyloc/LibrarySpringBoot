@@ -87,6 +87,7 @@ public class LibraryRestController {
     @PutMapping(path = "updateBook", consumes = "application/JSON")
     public ResponseEntity<Book> updateBook(@RequestBody Book book) {
         Optional<Book> bookFound = bookservice.findBookById(book.getBookId());
+        Optional<Book> bookUpdate = bookFound;
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("operation", "updateBook");
@@ -94,12 +95,43 @@ public class LibraryRestController {
         if (!bookFound.isPresent()) {
             headers.add("operationStatus", "not found");
             return ResponseEntity.accepted().headers(headers).body(null);
-        } else if (book.equals(bookFound)) {
+        } else if (book.equals(bookFound.get())) {
             headers.add("operationStatus", "no data to update");
             return ResponseEntity.accepted().headers(headers).body(null);
         } else {
-            headers.add("operationStatus", "updated");
-            return ResponseEntity.accepted().headers(headers).body(bookservice.updateBook(book).get());
+            Boolean mustUpdate = false;
+            if(!book.getAuthor().equals(bookFound.get().getAuthor()) && !book.getAuthor().equals("")) {
+                bookUpdate.get().setAuthor(book.getAuthor());
+                headers.add("author", "to be updated");
+                mustUpdate = true;
+            }
+            if(!book.getTitle().equals(bookFound.get().getTitle()) && !book.getTitle().equals("")) {
+                bookUpdate.get().setTitle(book.getTitle());
+                headers.add("title", "to be updated");
+                mustUpdate = true;
+            }
+            if(!book.getIsbn().equals(bookFound.get().getIsbn()) && !book.getIsbn().equals("")) {
+                bookUpdate.get().setIsbn(book.getIsbn());
+                headers.add("ISBN", "to be updated");
+                mustUpdate = true;
+            }
+            if((book.getPublishedYear() != bookFound.get().getPublishedYear()) && (book.getPublishedYear() != 0)) {
+                bookUpdate.get().setPublishedYear(book.getPublishedYear());
+                headers.add("published year", "to be updated");
+                mustUpdate = true;
+            }
+            if((book.getPages() != bookFound.get().getPages()) && (book.getPages() != 0)) {
+                bookUpdate.get().setIsbn(book.getIsbn());
+                headers.add("pages", "to be updated");
+                mustUpdate = true;
+            }
+            if (mustUpdate) {
+                headers.add("operationStatus", "updated");
+                return ResponseEntity.accepted().headers(headers).body(bookservice.updateBook(bookUpdate.get()).get());
+            } else {
+                headers.add("operationStatus", "no valid data to update");
+                return ResponseEntity.accepted().headers(headers).body(null);
+            }
         }
     }
 
